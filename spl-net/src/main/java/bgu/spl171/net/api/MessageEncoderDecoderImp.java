@@ -6,9 +6,9 @@ import bgu.spl171.net.api.bidi.Packets.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
-/**
- * Created by romybu on 11/01/17.
- */
+
+//TODO: case 3;
+
 public class MessageEncoderDecoderImp implements MessageEncoderDecoder<Packet> {
     private int counter=0;
     //private int countAck=0;
@@ -20,7 +20,7 @@ public class MessageEncoderDecoderImp implements MessageEncoderDecoder<Packet> {
     private int len = 0;
 
 
-    Packet decodeNextByte(byte nextByte){
+    public Packet decodeNextByte(byte nextByte){
         if(counter<2){
             start[counter]=nextByte;
             counter++;
@@ -32,25 +32,79 @@ public class MessageEncoderDecoderImp implements MessageEncoderDecoder<Packet> {
         if (opcode!=-1){
             switch (opcode){
                 case 1:{
-                    return buildRRQ(nextByte);
+                    return buildRRQ(nextByte); break;
                 }
                 case 2:{
-                    return buildWRQ(nextByte);
+                    return buildWRQ(nextByte); break;
                 }
                 case 4:{
-                    return buildACK(nextByte);
+                    return buildACK(nextByte); break;
                 }
                 case 5:{
-                    return buildERROR(nextByte);
+                    return buildERROR(nextByte); break;
                 }
                 case 6:{
-
+                    return new DIRO(); break;
+                }
+                case 7:{
+                    return buildLOGRQ(nextByte); break;
+                }
+                case 8:{
+                    return buildDELRQ(nextByte); break;
+                }
+                case 9:{
+                    return buildBCAST(nextByte); break;
+                }
+                case 10:{
+                    return new DISC(); break;
                 }
             }
         }
     }
 
-    byte[] encode(Packet message);
+    public byte[] encode(Packet message){
+        switch (message.getOpcode()){
+            case 1:{
+                return  createBytesArrayWithString((PacketsWithString)message); break;
+            }
+
+            case 2:{
+                return  createBytesArrayWithString((PacketsWithString)message); break;
+            }
+            case 4:{
+                byte[] tmp=shortToBytes((message).getOpcode());
+                byte[] tmp2=shortToBytes(((ACK)message).getBlockNumber());
+                return  mergeArrays(tmp, tmp2); break;
+            }
+            case 5:{
+                byte[] tmp=shortToBytes((message).getOpcode());
+                byte[] tmp2=shortToBytes(((ERROR)message).getErrorCode());
+                byte[] midAns= mergeArrays(tmp, tmp2);
+                byte[] tmp3=(((ERROR)message).getErrMsg() + "0").getBytes();
+                return mergeArrays(midAns, tmp3); break;
+            }
+            case 6:{
+                return shortToBytes((message).getOpcode()); break;
+            }
+            case 7:{
+                return  createBytesArrayWithString((PacketsWithString)message); break;
+            }
+            case 8:{
+                return  createBytesArrayWithString((PacketsWithString)message); break;
+            }
+            case 9:{
+                byte[] tmp=shortToBytes((message).getOpcode());
+                byte[] tmp2=shortToBytes(((BCAST)message).getDeletedOrAdded());
+                byte[] midAns= mergeArrays(tmp, tmp2);
+                byte[] tmp3=(((BCAST)message).getFileName() + "0").getBytes();
+                return mergeArrays(midAns, tmp3); break;
+            }
+            case 10:{
+                return shortToBytes((message).getOpcode()); break;
+            }
+        }
+    }
+
 
 
     private Packet buildRRQ(byte nextByte) {
@@ -136,6 +190,62 @@ public class MessageEncoderDecoderImp implements MessageEncoderDecoder<Packet> {
 
     }
 
+    private Packet buildLOGRQ(byte nextByte){
+        if (!isStarted) {
+            toReturn = new LOGRQ();
+            isStarted=true;
+        }
+
+        if (nextByte == '0') {
+            ((LOGRQ)toReturn).setString(popString());
+            return toReturn;
+        }
+
+        pushByte(nextByte);
+        return null;
+    }
+
+    private Packet buildDELRQ(byte nextByte){
+        if (!isStarted) {
+            toReturn = new DELRQ();
+            isStarted=true;
+        }
+
+        if (nextByte == '0') {
+            ((DELRQ)toReturn).setString(popString());
+            return toReturn;
+        }
+
+        pushByte(nextByte);
+        return null;
+    }
+
+    private Packet buildBCAST(byte nextByte){
+        if (!isStarted) {
+            toReturn = new BCAST();
+            isStarted=true;
+            ((BCAST)toReturn).setDeletedOrAdded(nextByte);
+        }
+
+        else {
+            if (nextByte == '0') {
+                ((BCAST) toReturn).setFileName(popString());
+                return toReturn;
+            }
+
+            pushByte(nextByte);
+        }
+
+        return null;
+    }
+
+
+    private byte[] createBytesArrayWithString(PacketsWithString p){
+        byte[] tmp=shortToBytes((p).getOpcode());
+        byte[] tmp2=(p.getString() + "0").getBytes();
+       return  mergeArrays(tmp, tmp2);
+    }
+
 
 
     public short bytesToShort(byte[] byteArr)
@@ -152,6 +262,7 @@ public class MessageEncoderDecoderImp implements MessageEncoderDecoder<Packet> {
         bytesArr[1] = (byte)(num & 0xFF);
         return bytesArr;
     }
+
     private void pushByte(byte nextByte) {
         if (len >= bytes.length) {
             bytes = Arrays.copyOf(bytes, len * 2);
@@ -165,4 +276,20 @@ public class MessageEncoderDecoderImp implements MessageEncoderDecoder<Packet> {
         len = 0;
         return result;
     }
+
+    private byte[] mergeArrays(byte[] tmp1, byte[] tmp2){
+        byte[] ans= new byte[tmp1.length+tmp2.length];
+        int i=0;
+        for (int j = 0; j < tmp1.length; j++) {
+            ans[i] = tmp1[j];
+            i++;
+        }
+        for (int j = 0; j < tmp2.length; j++) {
+            ans[i] = tmp2[j];
+            i++;
+        }
+        return ans;
+    }
+
 }
+

@@ -1,8 +1,8 @@
-package bgu.spl171.net.api.bidi;
+package bgu.spl171.net.api.bidi.Packets;
 
-/**
- * Created by alonam on 1/11/17.
- */
+//TODO: check where the block number is updated
+
+
 public class ACK implements Packet{
     short opcode;
     short blockNumber;

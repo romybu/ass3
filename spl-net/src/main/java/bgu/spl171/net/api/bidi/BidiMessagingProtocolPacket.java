@@ -1,5 +1,7 @@
 package bgu.spl171.net.api.bidi;
 
+import bgu.spl171.net.api.bidi.Packets.Packet;
+
 import java.util.HashMap;
 
 /**

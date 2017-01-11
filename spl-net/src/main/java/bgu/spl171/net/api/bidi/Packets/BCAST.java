@@ -1,4 +1,4 @@
-package bgu.spl171.net.api.bidi;
+package bgu.spl171.net.api.bidi.Packets;
 
 /**
  * Created by alonam on 1/11/17.

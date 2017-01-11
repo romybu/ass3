@@ -1,9 +1,9 @@
-package bgu.spl171.net.api.bidi;
+package bgu.spl171.net.api.bidi.Packets;
 
 /**
  * Created by romybu on 11/01/17.
  */
-public class PacketsWithString implements Packet {
+public abstract class PacketsWithString implements Packet {
     private String string;
     private byte lastByte;
 
@@ -22,5 +22,7 @@ public class PacketsWithString implements Packet {
     public byte getLastByte() {
         return lastByte;
     }
+
+    public abstract short getOpcode();
 
 }

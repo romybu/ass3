@@ -1,17 +1,17 @@
-package bgu.spl171.net.api.bidi;
+package bgu.spl171.net.api.bidi.Packets;
 
 /**
  * Created by romybu on 11/01/17.
  */
 public class DELRQ  extends PacketsWithString {
-    private Short opcode;
+    private short opcode;
 
     public DELRQ(){
         super();
         opcode=8;
     }
 
-    public Short getOpcode() {
+    public short getOpcode() {
         return opcode;
     }
 }
