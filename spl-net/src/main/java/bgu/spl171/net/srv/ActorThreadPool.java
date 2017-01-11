@@ -24,7 +24,7 @@ public class ActorThreadPool {
         playingNow = ConcurrentHashMap.newKeySet();
         actsRWLock = new ReentrantReadWriteLock();
     }
-//testactor
+
     public void submit(Object act, Runnable r) {
         synchronized (act) {
             if (!playingNow.contains(act)) {
