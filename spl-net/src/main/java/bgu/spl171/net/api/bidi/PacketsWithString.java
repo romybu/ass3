@@ -15,8 +15,8 @@ public class PacketsWithString implements Packet {
         return string;
     }
 
-    public void setString(String string) {
-        this.string = string;
+    public void setString(String str) {
+        string = string+str;
     }
 
     public byte getLastByte() {
