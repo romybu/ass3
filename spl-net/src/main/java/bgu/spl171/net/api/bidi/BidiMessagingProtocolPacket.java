@@ -19,7 +19,7 @@ public class BidiMessagingProtocolPacket implements BidiMessagingProtocol<Packet
     }
 
     public void process(Packet message){
-        message.execute();
+//        message.execute();
 
 //        short opcode=message.getOpcode();
 //        switch (opcode){
