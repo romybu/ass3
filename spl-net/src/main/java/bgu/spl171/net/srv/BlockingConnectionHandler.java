@@ -6,17 +6,19 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import bgu.spl171.net.api.bidi.*;
+import bgu.spl171.net.srv.bidi.*;
 
 public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler<T> {
 
-    private final MessagingProtocol<T> protocol;
+    private final BidiMessagingProtocol<T> protocol;
     private final MessageEncoderDecoder<T> encdec;
     private final Socket sock;
     private BufferedInputStream in;
     private BufferedOutputStream out;
     private volatile boolean connected = true;
 
-    public BlockingConnectionHandler(Socket sock, MessageEncoderDecoder<T> reader, MessagingProtocol<T> protocol) {
+    public BlockingConnectionHandler(Socket sock, MessageEncoderDecoder<T> reader, BidiMessagingProtocol<T> protocol) {
         this.sock = sock;
         this.encdec = reader;
         this.protocol = protocol;
@@ -29,16 +31,17 @@ public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler
             int read;
 
             in = new BufferedInputStream(sock.getInputStream());
-            out = new BufferedOutputStream(sock.getOutputStream());
+
 
             while (!protocol.shouldTerminate() && connected && (read = in.read()) >= 0) {
                 T nextMessage = encdec.decodeNextByte((byte) read);
                 if (nextMessage != null) {
-                    T response = protocol.process(nextMessage);
-                    if (response != null) {
-                        out.write(encdec.encode(response));
-                        out.flush();
-                    }
+                    //T response = protocol.process(nextMessage);
+                    protocol.process(nextMessage);
+                    //if (response != null) {
+                      //  out.write(encdec.encode(response));
+                     //   out.flush();
+                    //}
                 }
             }
 
@@ -52,5 +55,19 @@ public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler
     public void close() throws IOException {
         connected = false;
         sock.close();
+    }
+
+    public void send(T msg){
+        try(Socket sock = this.sock) {
+            out = new BufferedOutputStream(sock.getOutputStream());
+            //if (msg != null) {
+                out.write(encdec.encode(msg));
+                out.flush();
+            //}
+        }
+        catch (IOException ex) {
+            ex.printStackTrace();
+        }
+
     }
 }
