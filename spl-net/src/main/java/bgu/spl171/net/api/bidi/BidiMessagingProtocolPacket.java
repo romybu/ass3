@@ -1,6 +1,6 @@
 package bgu.spl171.net.api.bidi;
 
-import bgu.spl171.net.api.bidi.Packets.Packet;
+import bgu.spl171.net.api.bidi.Packets.*;
 
 import java.util.HashMap;
 
@@ -19,15 +19,21 @@ public class BidiMessagingProtocolPacket implements BidiMessagingProtocol<Packet
     }
 
     public void process(Packet message){
-        short opcode=message.getOpcode();
-        switch (opcode){
-            case 1:{
+        message.execute();
 
-            }
-        }
+//        short opcode=message.getOpcode();
+//        switch (opcode){
+//            case 1:{
+//
+//            }
+//        }
     }
 
     public boolean shouldTerminate(){
         return  shouldTerminate;
+    }
+
+    public void execute(ACK msg){
+
     }
 }

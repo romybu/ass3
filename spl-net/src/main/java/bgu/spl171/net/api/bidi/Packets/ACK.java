@@ -3,6 +3,8 @@ package bgu.spl171.net.api.bidi.Packets;
 //TODO: check where the block number is updated
 
 
+import bgu.spl171.net.api.bidi.BidiMessagingProtocolPacket;
+
 public class ACK implements Packet{
     short opcode;
     short blockNumber;
@@ -22,5 +24,9 @@ public class ACK implements Packet{
 
     public void setBlockNumber(short blockNumber) {
         this.blockNumber = blockNumber;
+    }
+
+    public void execute(BidiMessagingProtocolPacket p){
+        p.execute(this);
     }
 }
