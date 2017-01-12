@@ -8,11 +8,26 @@ import java.util.HashMap;
  * Created by romybu on 11/01/17.
  */
 public class BidiMessagingProtocolPacket implements BidiMessagingProtocol<Packet> {
-    private static HashMap<String userName, int id>();
+    private static HashMap map;
+    private Connections<Packet> connections;
+    private int connectionId;
+    private boolean shouldTerminate = false;
 
-    void start(int connectionId, Connections<T> connections){}
+    public void start(int connectionId, Connections<Packet> connections){
+        this.connections =connections ;
+        this.connectionId=connectionId;
+    }
 
-    void process(T message){}
+    public void process(Packet message){
+        short opcode=message.getOpcode();
+        switch (opcode){
+            case 1:{
 
-    boolean shouldTerminate(){}
+            }
+        }
+    }
+
+    public boolean shouldTerminate(){
+        return  shouldTerminate;
+    }
 }

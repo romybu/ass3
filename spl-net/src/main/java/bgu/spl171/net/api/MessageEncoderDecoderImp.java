@@ -32,77 +32,79 @@ public class MessageEncoderDecoderImp implements MessageEncoderDecoder<Packet> {
         if (opcode!=-1){
             switch (opcode){
                 case 1:{
-                    return buildRRQ(nextByte); break;
+                    return buildRRQ(nextByte);
                 }
                 case 2:{
-                    return buildWRQ(nextByte); break;
+                    return buildWRQ(nextByte);
                 }
                 case 4:{
-                    return buildACK(nextByte); break;
+                    return buildACK(nextByte);
                 }
                 case 5:{
-                    return buildERROR(nextByte); break;
+                    return buildERROR(nextByte);
                 }
                 case 6:{
-                    return new DIRO(); break;
+                    return new DIRO();
                 }
                 case 7:{
-                    return buildLOGRQ(nextByte); break;
+                    return buildLOGRQ(nextByte);
                 }
                 case 8:{
-                    return buildDELRQ(nextByte); break;
+                    return buildDELRQ(nextByte);
                 }
                 case 9:{
-                    return buildBCAST(nextByte); break;
+                    return buildBCAST(nextByte);
                 }
                 case 10:{
-                    return new DISC(); break;
+                    return new DISC();
                 }
             }
         }
+        return null;
     }
 
     public byte[] encode(Packet message){
         switch (message.getOpcode()){
             case 1:{
-                return  createBytesArrayWithString((PacketsWithString)message); break;
+                return  createBytesArrayWithString((PacketsWithString)message);
             }
 
             case 2:{
-                return  createBytesArrayWithString((PacketsWithString)message); break;
+                return  createBytesArrayWithString((PacketsWithString)message);
             }
             case 4:{
                 byte[] tmp=shortToBytes((message).getOpcode());
                 byte[] tmp2=shortToBytes(((ACK)message).getBlockNumber());
-                return  mergeArrays(tmp, tmp2); break;
+                return  mergeArrays(tmp, tmp2);
             }
             case 5:{
                 byte[] tmp=shortToBytes((message).getOpcode());
                 byte[] tmp2=shortToBytes(((ERROR)message).getErrorCode());
                 byte[] midAns= mergeArrays(tmp, tmp2);
                 byte[] tmp3=(((ERROR)message).getErrMsg() + "0").getBytes();
-                return mergeArrays(midAns, tmp3); break;
+                return mergeArrays(midAns, tmp3);
             }
             case 6:{
-                return shortToBytes((message).getOpcode()); break;
+                return shortToBytes((message).getOpcode());
             }
             case 7:{
-                return  createBytesArrayWithString((PacketsWithString)message); break;
+                return  createBytesArrayWithString((PacketsWithString)message);
             }
             case 8:{
-                return  createBytesArrayWithString((PacketsWithString)message); break;
+                return  createBytesArrayWithString((PacketsWithString)message);
             }
             case 9:{
                 byte[] tmp=shortToBytes((message).getOpcode());
                 byte[] tmp2=shortToBytes(((BCAST)message).getDeletedOrAdded());
                 byte[] midAns= mergeArrays(tmp, tmp2);
                 byte[] tmp3=(((BCAST)message).getFileName() + "0").getBytes();
-                return mergeArrays(midAns, tmp3); break;
+                return mergeArrays(midAns, tmp3);
             }
             case 10:{
-                return shortToBytes((message).getOpcode()); break;
+                return shortToBytes((message).getOpcode());
             }
         }
+        return null;
     }
 
 
